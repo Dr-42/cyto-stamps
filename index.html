@@ -1,0 +1,1470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cytopath Stamp Architect</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ─── THEME TOKENS ─── */
+:root {
+  --font-ui: 'IBM Plex Sans', system-ui, sans-serif;
+  --font-mono: 'IBM Plex Mono', monospace;
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --sidebar-w: 240px;
+  --topbar-h: 54px;
+}
+
+/* ─── THEME: MOCHA (default) ─── */
+[data-theme="mocha"] {
+  --bg:       #11111b;
+  --surf0:    #181825;
+  --surf1:    #1e1e2e;
+  --surf2:    #313244;
+  --surf3:    #45475a;
+  --text:     #cdd6f4;
+  --sub:      #a6adc8;
+  --dim:      #6c7086;
+  --accent:   #89b4fa;
+  --accent2:  #cba6f7;
+  --ok:       #a6e3a1;
+  --warn:     #f9e2af;
+  --err:      #f38ba8;
+  --border:   #313244;
+  --preview-bg: #dce0e8;
+}
+[data-theme="latte"] {
+  --bg:       #eff1f5;
+  --surf0:    #e6e9ef;
+  --surf1:    #dce0e8;
+  --surf2:    #ccd0da;
+  --surf3:    #bcc0cc;
+  --text:     #4c4f69;
+  --sub:      #5c5f77;
+  --dim:      #8c8fa1;
+  --accent:   #1e66f5;
+  --accent2:  #8839ef;
+  --ok:       #40a02b;
+  --warn:     #df8e1d;
+  --err:      #d20f39;
+  --border:   #ccd0da;
+  --preview-bg: #bcc0cc;
+}
+[data-theme="nord"] {
+  --bg:       #2e3440;
+  --surf0:    #3b4252;
+  --surf1:    #434c5e;
+  --surf2:    #4c566a;
+  --surf3:    #616e88;
+  --text:     #eceff4;
+  --sub:      #d8dee9;
+  --dim:      #616e88;
+  --accent:   #88c0d0;
+  --accent2:  #b48ead;
+  --ok:       #a3be8c;
+  --warn:     #ebcb8b;
+  --err:      #bf616a;
+  --border:   #4c566a;
+  --preview-bg: #e5e9f0;
+}
+[data-theme="solarized"] {
+  --bg:       #002b36;
+  --surf0:    #073642;
+  --surf1:    #004052;
+  --surf2:    #005060;
+  --surf3:    #586e75;
+  --text:     #fdf6e3;
+  --sub:      #eee8d5;
+  --dim:      #657b83;
+  --accent:   #268bd2;
+  --accent2:  #6c71c4;
+  --ok:       #859900;
+  --warn:     #b58900;
+  --err:      #dc322f;
+  --border:   #073642;
+  --preview-bg: #fdf6e3;
+}
+[data-theme="clinical"] {
+  --bg:       #f8f9fb;
+  --surf0:    #ffffff;
+  --surf1:    #f1f3f7;
+  --surf2:    #e4e8f0;
+  --surf3:    #c8cfe0;
+  --text:     #1a2035;
+  --sub:      #4a5270;
+  --dim:      #8a92b0;
+  --accent:   #2563eb;
+  --accent2:  #7c3aed;
+  --ok:       #16a34a;
+  --warn:     #d97706;
+  --err:      #dc2626;
+  --border:   #dde2ee;
+  --preview-bg: #dde2ee;
+}
+
+/* ─── RESET & BASE ─── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: var(--font-ui);
+  background: var(--bg);
+  color: var(--text);
+  font-size: 14px;
+  line-height: 1.5;
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transition: background .2s, color .2s;
+}
+
+/* ─── TOP BAR ─── */
+.topbar {
+  height: var(--topbar-h);
+  background: var(--surf0);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 16px;
+  flex-shrink: 0;
+  z-index: 10;
+}
+.topbar-brand {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: .08em;
+  color: var(--accent);
+  white-space: nowrap;
+  margin-right: 4px;
+}
+.topbar-brand span { color: var(--dim); font-weight: 400; }
+.topbar-divider { width: 1px; height: 24px; background: var(--border); flex-shrink: 0; }
+
+.ctrl-group {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.ctrl-group label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--dim);
+}
+.ctrl-group input, .ctrl-group select {
+  background: var(--surf2);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 5px 8px;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  outline: none;
+  transition: border-color .15s;
+}
+.ctrl-group input:focus, .ctrl-group select:focus { border-color: var(--accent); }
+
+.topbar-actions { margin-left: auto; display: flex; gap: 8px; align-items: center; }
+.btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 7px 14px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--surf2);
+  color: var(--text);
+  font-family: var(--font-ui);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all .15s;
+  white-space: nowrap;
+}
+.btn:hover { background: var(--surf3); }
+.btn-accent { background: var(--accent); color: var(--bg); border-color: var(--accent); }
+.btn-accent:hover { opacity: .88; }
+.btn-warn { background: transparent; border-color: var(--warn); color: var(--warn); }
+.btn-warn:hover { background: color-mix(in srgb, var(--warn) 12%, transparent); }
+
+/* Theme picker */
+.theme-picker { display: flex; gap: 5px; align-items: center; }
+.theme-dot {
+  width: 18px; height: 18px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: transform .15s, border-color .15s;
+}
+.theme-dot:hover { transform: scale(1.2); }
+.theme-dot.active { border-color: var(--text); }
+
+/* ─── LAYOUT ─── */
+.app-body {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+/* ─── SIDEBAR ─── */
+.sidebar {
+  width: var(--sidebar-w);
+  flex-shrink: 0;
+  background: var(--surf0);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transition: width .25s ease, transform .25s ease;
+}
+.sidebar-header {
+  padding: 14px 14px 10px;
+  border-bottom: 1px solid var(--border);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--dim);
+}
+.template-list {
+  overflow-y: auto;
+  flex: 1;
+  padding: 8px;
+}
+.template-list::-webkit-scrollbar { width: 4px; }
+.template-list::-webkit-scrollbar-thumb { background: var(--surf3); border-radius: 4px; }
+
+.tpl-group-label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: .07em;
+  text-transform: uppercase;
+  color: var(--dim);
+  padding: 10px 6px 4px;
+}
+.template-btn {
+  width: 100%;
+  text-align: left;
+  padding: 8px 10px;
+  margin-bottom: 2px;
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--sub);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-family: var(--font-ui);
+  font-size: 12px;
+  transition: all .15s;
+  line-height: 1.35;
+}
+.template-btn:hover { background: var(--surf1); color: var(--text); }
+.template-btn.active {
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+  border-color: color-mix(in srgb, var(--accent) 35%, transparent);
+  color: var(--accent);
+  font-weight: 500;
+}
+.tpl-tag {
+  display: inline-block;
+  font-size: 9px;
+  padding: 1px 5px;
+  border-radius: 3px;
+  margin-left: 4px;
+  vertical-align: middle;
+  background: color-mix(in srgb, var(--accent2) 15%, transparent);
+  color: var(--accent2);
+  font-weight: 600;
+  letter-spacing: .04em;
+}
+
+/* ─── WORKSPACE ─── */
+.workspace {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  overflow: hidden;
+}
+
+/* ─── EDITOR ─── */
+.editor-panel {
+  background: var(--surf1);
+  border-right: 1px solid var(--border);
+  overflow-y: auto;
+  padding: 16px;
+}
+.editor-panel::-webkit-scrollbar { width: 4px; }
+.editor-panel::-webkit-scrollbar-thumb { background: var(--surf3); border-radius: 4px; }
+
+.editor-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+}
+.editor-header h3 {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .07em;
+  text-transform: uppercase;
+  color: var(--dim);
+}
+
+.field-row {
+  background: var(--surf0);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  margin-bottom: 8px;
+  overflow: hidden;
+  transition: border-color .15s;
+}
+.field-row:hover { border-color: var(--surf3); }
+.field-row-head {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 10px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surf1);
+}
+.drag-handle {
+  color: var(--dim);
+  cursor: grab;
+  font-size: 14px;
+  line-height: 1;
+  user-select: none;
+  padding: 2px 0;
+}
+.field-type-select {
+  flex: 1;
+  background: var(--surf2);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 4px 6px;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-ui);
+  font-size: 11px;
+  outline: none;
+}
+.field-actions { display: flex; gap: 3px; }
+.btn-icon {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--sub);
+  width: 26px; height: 26px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-size: 12px;
+  display: flex; align-items: center; justify-content: center;
+  transition: all .15s;
+}
+.btn-icon:hover { background: var(--surf2); color: var(--text); }
+.btn-icon.del { color: var(--err); border-color: color-mix(in srgb, var(--err) 30%, transparent); }
+.btn-icon.del:hover { background: color-mix(in srgb, var(--err) 12%, transparent); }
+
+.field-body { padding: 10px; display: flex; flex-direction: column; gap: 8px; }
+.field-body input[type="text"] {
+  width: 100%;
+  background: var(--surf2);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 6px 10px;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-ui);
+  font-size: 12px;
+  outline: none;
+  transition: border-color .15s;
+}
+.field-body input[type="text"]:focus { border-color: var(--accent); }
+.field-body .input-row { display: flex; gap: 8px; }
+.field-body .input-row input:first-child { flex: 0 0 28%; }
+.field-body .hint {
+  font-size: 10px;
+  color: var(--dim);
+  font-family: var(--font-mono);
+}
+
+/* ─── PREVIEW ─── */
+.preview-panel {
+  background: var(--preview-bg);
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  overflow: hidden;
+  position: relative;
+}
+.preview-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 12px;
+  background: color-mix(in srgb, var(--preview-bg) 60%, black 8%);
+  border-bottom: 1px solid rgba(0,0,0,.12);
+  flex-shrink: 0;
+  user-select: none;
+}
+.preview-toolbar-label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: .07em;
+  text-transform: uppercase;
+  color: rgba(80,80,80,.75);
+  flex: 1;
+}
+.zoom-btn {
+  width: 26px; height: 26px;
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(0,0,0,.18);
+  background: rgba(255,255,255,.35);
+  color: #333;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  line-height: 1;
+  transition: background .12s;
+  flex-shrink: 0;
+}
+.zoom-btn:hover { background: rgba(255,255,255,.6); }
+.zoom-indicator {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  color: #444;
+  min-width: 38px;
+  text-align: center;
+}
+.zoom-reset {
+  font-size: 10px;
+  padding: 3px 7px;
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(0,0,0,.15);
+  background: rgba(255,255,255,.3);
+  color: #444;
+  cursor: pointer;
+  font-family: var(--font-mono);
+  transition: background .12s;
+}
+.zoom-reset:hover { background: rgba(255,255,255,.55); }
+.preview-scroll {
+  flex: 1;
+  overflow: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 28px;
+}
+.preview-zoom-wrapper {
+  transform-origin: center center;
+  display: inline-flex;
+  transition: transform .12s ease;
+}
+#svg-container svg {
+  display: block;
+  box-shadow: 0 4px 20px rgba(0,0,0,.18), 0 1px 4px rgba(0,0,0,.1);
+}
+
+/* ─── MOBILE OVERLAY SIDEBAR ─── */
+.sidebar-toggle {
+  display: none;
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text);
+  width: 34px; height: 34px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-size: 16px;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.sidebar-overlay {
+  display: none;
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,.5);
+  z-index: 99;
+}
+
+/* ─── RESPONSIVE ─── */
+@media (max-width: 900px) {
+  .workspace { grid-template-columns: 1fr; }
+  .preview-panel { display: none; }
+  .sidebar { position: fixed; left: 0; top: 0; bottom: 0; z-index: 100; transform: translateX(-100%); transition: transform .25s ease; width: 260px; }
+  .sidebar.open { transform: translateX(0); }
+  .sidebar-toggle { display: flex; }
+  .sidebar-overlay.open { display: block; }
+  .topbar { gap: 8px; flex-wrap: nowrap; overflow-x: auto; }
+  .ctrl-group { flex-shrink: 0; }
+  .ctrl-group input { width: 55px; }
+  .topbar-divider { display: none; }
+  .preview-toggle-btn { display: inline-flex !important; }
+}
+@media (max-width: 600px) {
+  .ctrl-group.hide-xs { display: none; }
+  .topbar-brand span { display: none; }
+}
+/* Show preview on mobile when toggled */
+body.show-preview .editor-panel { display: none; }
+body.show-preview .preview-panel { display: flex; }
+.preview-toggle-btn { display: none; }
+
+/* ─── SIDEBAR FOOTER ─── */
+.sidebar-footer {
+  padding: 10px 8px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex-shrink: 0;
+}
+.btn-new-stamp {
+  width: 100%;
+  padding: 8px 12px;
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
+  border: 1px dashed color-mix(in srgb, var(--accent) 45%, transparent);
+  color: var(--accent);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-ui);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all .15s;
+  text-align: center;
+  letter-spacing: .02em;
+}
+.btn-new-stamp:hover {
+  background: color-mix(in srgb, var(--accent) 18%, transparent);
+  border-style: solid;
+}
+
+/* custom-stamp inline controls in sidebar */
+.tpl-btn-row {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  width: 100%;
+}
+.tpl-btn-row .template-btn { flex: 1; margin-bottom: 0; }
+.tpl-action {
+  flex-shrink: 0;
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--dim);
+  width: 24px; height: 28px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-size: 11px;
+  display: flex; align-items: center; justify-content: center;
+  transition: all .15s;
+  padding: 0;
+}
+.tpl-action:hover { background: var(--surf2); color: var(--text); border-color: var(--border); }
+.tpl-action.del:hover { color: var(--err); }
+
+.tpl-tag-custom {
+  display: inline-block;
+  font-size: 9px;
+  padding: 1px 5px;
+  border-radius: 3px;
+  margin-left: 4px;
+  vertical-align: middle;
+  background: color-mix(in srgb, var(--ok) 15%, transparent);
+  color: var(--ok);
+  font-weight: 600;
+  letter-spacing: .04em;
+}
+
+/* ─── MODAL ─── */
+.modal-backdrop {
+  display: none;
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,.55);
+  z-index: 200;
+  align-items: center;
+  justify-content: center;
+}
+.modal-backdrop.open { display: flex; }
+.modal {
+  background: var(--surf0);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  width: 340px;
+  max-width: 92vw;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  box-shadow: 0 20px 60px rgba(0,0,0,.4);
+}
+.modal h2 {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  margin: 0;
+}
+.modal-field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.modal-field label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--dim);
+}
+.modal-field input, .modal-field select {
+  background: var(--surf2);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 8px 10px;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-ui);
+  font-size: 13px;
+  outline: none;
+  transition: border-color .15s;
+}
+.modal-field input:focus, .modal-field select:focus { border-color: var(--accent); }
+.modal-hint {
+  font-size: 11px;
+  color: var(--dim);
+  line-height: 1.5;
+}
+.modal-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+</style>
+</head>
+<body data-theme="mocha">
+
+<div class="sidebar-overlay" id="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+<!-- NEW STAMP MODAL -->
+<div class="modal-backdrop" id="modal-backdrop">
+  <div class="modal">
+    <h2 id="modal-title">New stamp</h2>
+    <div class="modal-field">
+      <label>Stamp name</label>
+      <input type="text" id="modal-name" placeholder="e.g. Bethesda — Pancreas" maxlength="60">
+    </div>
+    <div class="modal-field">
+      <label>Group / Category</label>
+      <select id="modal-group-select" onchange="modalGroupChange()">
+        <option value="__new__">＋ Create new group…</option>
+      </select>
+    </div>
+    <div class="modal-field" id="modal-newgroup-field" style="display:none">
+      <label>New group name</label>
+      <input type="text" id="modal-newgroup" placeholder="e.g. Bone &amp; Soft Tissue" maxlength="40">
+    </div>
+    <div class="modal-hint" id="modal-hint">A blank stamp will be created. You can add rows from the Layout Builder.</div>
+    <div class="modal-actions">
+      <button class="btn" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-accent" id="modal-confirm-btn" onclick="confirmModal()">Create</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <button class="sidebar-toggle" onclick="toggleSidebar()" aria-label="Templates">☰</button>
+  <div class="topbar-brand">STAMP<span> ARCHITECT</span></div>
+  <div class="topbar-divider"></div>
+
+  <div class="ctrl-group">
+    <label>Width mm</label>
+    <input type="number" id="ctrl-w" value="75" style="width:58px">
+  </div>
+  <div class="ctrl-group">
+    <label>Height mm</label>
+    <input type="number" id="ctrl-h" value="50" style="width:58px">
+  </div>
+  <div class="ctrl-group">
+    <label>Font pt</label>
+    <input type="number" id="ctrl-fs" value="10" style="width:50px">
+  </div>
+  <div class="ctrl-group hide-xs">
+    <label>Spacing</label>
+    <input type="number" id="ctrl-sp" value="6" style="width:50px">
+  </div>
+  <div class="ctrl-group hide-xs">
+    <label>Border</label>
+    <select id="ctrl-style" style="width:90px">
+      <option value="single">Single</option>
+      <option value="double">Double</option>
+      <option value="rounded">Rounded</option>
+    </select>
+  </div>
+
+  <div class="topbar-divider"></div>
+
+  <div class="ctrl-group">
+    <label>Theme</label>
+    <div class="theme-picker">
+      <div class="theme-dot active" data-theme="mocha"    style="background:#89b4fa" title="Mocha"></div>
+      <div class="theme-dot"        data-theme="latte"    style="background:#1e66f5" title="Latte"></div>
+      <div class="theme-dot"        data-theme="nord"     style="background:#88c0d0" title="Nord"></div>
+      <div class="theme-dot"        data-theme="solarized" style="background:#268bd2" title="Solarized"></div>
+      <div class="theme-dot"        data-theme="clinical" style="background:#2563eb" title="Clinical (Light)"></div>
+    </div>
+  </div>
+
+  <div class="topbar-actions">
+    <button class="btn preview-toggle-btn" onclick="togglePreview()">⟳ Preview</button>
+    <button class="btn btn-warn" onclick="resetTemplate()">Reset</button>
+    <button class="btn btn-accent" onclick="downloadSVG()">↓ SVG</button>
+  </div>
+</div>
+
+<!-- BODY -->
+<div class="app-body">
+
+  <!-- SIDEBAR -->
+  <div class="sidebar" id="sidebar">
+    <div class="sidebar-header">Templates</div>
+    <div class="template-list" id="template-list"></div>
+    <div class="sidebar-footer">
+      <button class="btn-new-stamp" onclick="openNewStampModal()">＋ New stamp</button>
+    </div>
+  </div>
+
+  <!-- WORKSPACE -->
+  <div class="workspace">
+
+    <!-- EDITOR -->
+    <div class="editor-panel">
+      <div class="editor-header">
+        <h3>Layout Builder</h3>
+        <button class="btn btn-accent" onclick="addField()" style="padding:5px 12px;font-size:11px">+ Add Row</button>
+      </div>
+      <div id="fields-container"></div>
+    </div>
+
+    <!-- PREVIEW -->
+    <div class="preview-panel">
+      <div class="preview-toolbar">
+        <span class="preview-toolbar-label">Preview</span>
+        <button class="zoom-btn" onclick="adjustZoom(-0.25)" title="Zoom out">−</button>
+        <span class="zoom-indicator" id="zoom-indicator">1.0×</span>
+        <button class="zoom-btn" onclick="adjustZoom(+0.25)" title="Zoom in">+</button>
+        <button class="zoom-reset" onclick="resetZoom()" title="Reset zoom">fit</button>
+      </div>
+      <div class="preview-scroll" id="preview-scroll">
+        <div class="preview-zoom-wrapper" id="preview-zoom-wrapper">
+          <div id="svg-container"></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+const STORAGE_KEY = 'stamp_arch_v5';
+
+/* ─────────────────────────────────────────
+   TEMPLATES
+───────────────────────────────────────── */
+const templates = [
+
+  /* ── GYNAE / CERVICAL ── */
+  {
+    id:"beth_lbc", name:"Bethesda — Cervical", group:"Gynaecological",
+    w:88, h:78, fs:9, sp:5, style:"double",
+    fields:[
+      {type:"title",  text:"The Bethesda System — Cervical Cytology"},
+      {type:"inline-boxes", label:"Specimen:", options:"Conventional Smear, LBC"},
+      {type:"divider"},
+      {type:"heading", text:"Specimen Adequacy"},
+      {type:"inline-boxes", label:"", options:"Satisfactory, Unsatisfactory"},
+      {type:"text",    text:"If unsat: □ Blood  □ Inflammation  □ Thick smear  □ Poor fixation"},
+      {type:"inline-boxes", label:"EC/TZ Component:", options:"Present, Absent"},
+      {type:"inline-boxes", label:"Endometrial cells (≥45 yrs):", options:"Seen, Not seen"},
+      {type:"divider"},
+      {type:"heading", text:"General Categorization"},
+      {type:"tier-list", options:"Negative for Intraepithelial Lesion or Malignancy (NILM)"},
+      {type:"inline-boxes", label:"Squamous:", options:"ASC-US, ASC-H, LSIL, HSIL, SCC"},
+      {type:"inline-boxes", label:"Glandular:", options:"AGC, AGC-FN, AIS, Adenocarcinoma"},
+      {type:"divider"},
+      {type:"heading", text:"Organisms / Flora"},
+      {type:"inline-boxes", label:"", options:"Normal, Shift (BV), Trichomonas, Candida, Actinomyces, HSV, CMV"},
+      {type:"inline-boxes", label:"Reactive changes:", options:"Present, Absent"},
+    ]
+  },
+
+  /* ── URINARY ── */
+  {
+    id:"paris_urinary", name:"Paris — Urinary", group:"Urinary",
+    w:85, h:62, fs:10, sp:5, style:"rounded",
+    fields:[
+      {type:"title", text:"The Paris System — Urinary Cytology (TPS 2.0)"},
+      {type:"inline-boxes", label:"Specimen:", options:"Voided urine, Instrumented, Washing/Brushing"},
+      {type:"divider"},
+      {type:"tier-list", options:"1 — Nondiagnostic, 2 — Negative for HGUC (NHGUC), 3 — Atypical Urothelial Cells (AUC), 4 — Suspicious for HGUC (SHGUC), 5 — High-Grade Urothelial Carcinoma (HGUC), 6 — Low-Grade Urothelial Neoplasm (LGUN), 7 — Other Malignancies / Secondary"},
+      {type:"fill-line", text:"Specify:"},
+    ]
+  },
+
+  /* ── THYROID ── */
+  {
+    id:"beth_thyroid", name:"Bethesda — Thyroid", group:"Thyroid / Salivary",
+    w:85, h:60, fs:10, sp:5, style:"rounded",
+    fields:[
+      {type:"title", text:"Bethesda System — Thyroid FNA"},
+      {type:"inline-boxes", label:"Adequacy:", options:"Satisfactory, Unsatisfactory"},
+      {type:"divider"},
+      {type:"tier-list", options:"I — Non-Diagnostic / Unsatisfactory, II — Benign, III — Atypia of Undetermined Significance (AUS/FLUS), IV — Follicular Neoplasm / Suspicious for FN, V — Suspicious for Malignancy, VI — Malignant"},
+      {type:"fill-line", text:"Specify:"},
+    ]
+  },
+
+  /* ── SALIVARY ── */
+  {
+    id:"milan_salivary", name:"Milan — Salivary Gland", group:"Thyroid / Salivary",
+    w:90, h:62, fs:10, sp:5, style:"rounded",
+    fields:[
+      {type:"title", text:"The Milan System — Salivary Gland FNA"},
+      {type:"divider"},
+      {type:"tier-list", options:"I — Non-Diagnostic, II — Non-Neoplastic, III — Atypia of Undetermined Significance (AUS), IVA — Benign Neoplasm, IVB — Salivary Neoplasm of Uncertain Malignant Potential (SUMP), V — Suspicious for Malignancy, VI — Malignant"},
+      {type:"fill-line", text:"Specify:"},
+    ]
+  },
+
+  /* ── BREAST ── */
+  {
+    id:"yokohama_breast", name:"Yokohama — Breast", group:"Breast / Soft Tissue",
+    w:82, h:52, fs:10, sp:5, style:"rounded",
+    fields:[
+      {type:"title", text:"Yokohama System — Breast FNA"},
+      {type:"divider"},
+      {type:"tier-list", options:"C1 — Insufficient / Unsatisfactory, C2 — Benign, C3 — Atypical / Probably Benign, C4 — Suspicious of Malignancy, C5 — Malignant"},
+      {type:"fill-line", text:"Specify:"},
+    ]
+  },
+
+  /* ── SEROUS ── */
+  {
+    id:"tis_serous", name:"International — Serous Fluid", group:"Body Fluids",
+    w:86, h:58, fs:10, sp:5, style:"rounded",
+    fields:[
+      {type:"title", text:"International System — Serous Fluid Cytopathology"},
+      {type:"inline-boxes", label:"Fluid Type:", options:"Pleural, Peritoneal, Pericardial"},
+      {type:"divider"},
+      {type:"tier-list", options:"I — Nondiagnostic, II — Negative for Malignancy (NFM), III — Atypia of Undetermined Significance (AUS), IV — Suspicious for Malignancy, V — Malignant"},
+      {type:"fill-line", text:"Cell type / Primary site:"},
+    ]
+  },
+
+  /* ── LYMPH NODE ── */
+  {
+    id:"ln_hybrid", name:"Lymph Node FNA (Upgraded)", group:"Lymph Node",
+    w:85, h:72, fs:10, sp:5, style:"double",
+    fields:[
+      {type:"title", text:"Lymph Node FNA"},
+      {type:"divider"},
+      {type:"tier-list", options:"I — Non-Diagnostic / Unsatisfactory, II — Benign / Reactive, III — Atypical / Indeterminate, IV — Suspicious for Malignancy, V — Malignant"},
+      {type:"divider"},
+      {type:"heading", text:"If Benign — Pattern"},
+      {type:"inline-boxes", label:"", options:"Reactive Hyperplasia, Granulomatous, Necrosis (Caseating), Necrosis (Non-caseating), Suppurative"},
+      {type:"inline-boxes", label:"AFB Stain:", options:"Positive, Negative, Pending"},
+      {type:"inline-boxes", label:"PAS / GMS:", options:"Positive, Negative, Pending"},
+      {type:"divider"},
+      {type:"heading", text:"If Malignant — Specify"},
+      {type:"inline-boxes", label:"", options:"Lymphoma, Metastatic Carcinoma, Metastatic Other"},
+      {type:"fill-line", text:"Cell type / Lineage:"},
+    ]
+  },
+
+  /* ── CSF ── */
+  {
+    id:"csf_icicle", name:"CSF — CNS Staging (ALL)", group:"Haematology / CSF",
+    w:80, h:60, fs:10, sp:5, style:"rounded",
+    fields:[
+      {type:"title", text:"CSF Cytology — CNS Status (ICiCLe / COG)"},
+      {type:"inline-boxes", label:"Adequacy:", options:"Adequate (≥500 cells/µL), Suboptimal"},
+      {type:"fill-line",  text:"WBC / µL:"},
+      {type:"fill-line",  text:"RBC / µL:"},
+      {type:"divider"},
+      {type:"tier-list", options:"CNS1 — No blasts (regardless of WBC), CNS2 — Blasts present AND WBC <5/µL (non-traumatic), CNS3 — Blasts present AND WBC ≥5/µL, TLP+ — Traumatic tap with blasts, TLP− — Traumatic tap without blasts"},
+      {type:"inline-boxes", label:"Lineage:", options:"B-ALL, T-ALL"},
+    ]
+  },
+
+  /* ── PANCREATIC / BILIARY ── */
+  {
+    id:"pancreat_pancb", name:"WHO — Pancreaticobiliary", group:"GI / Pancreatobiliary",
+    w:86, h:55, fs:10, sp:5, style:"rounded",
+    fields:[
+      {type:"title", text:"WHO Classification — Pancreaticobiliary FNA"},
+      {type:"inline-boxes", label:"Site:", options:"Pancreas, Bile Duct, Ampulla, Gallbladder"},
+      {type:"divider"},
+      {type:"tier-list", options:"I — Non-Diagnostic, II — Benign / Negative for Malignancy, III — Atypical, IV — Suspicious for Malignancy, V — Malignant"},
+      {type:"fill-line", text:"Specify:"},
+    ]
+  },
+
+  /* ── LUNG ── */
+  {
+    id:"who_lung", name:"WHO — Lung / Pulmonary", group:"Thoracic",
+    w:85, h:58, fs:10, sp:5, style:"rounded",
+    fields:[
+      {type:"title", text:"WHO Classification — Pulmonary Cytopathology"},
+      {type:"inline-boxes", label:"Specimen:", options:"Sputum, BAL, Brushing, FNA, Pleural fluid"},
+      {type:"divider"},
+      {type:"tier-list", options:"I — Non-Diagnostic / Unsatisfactory, II — Benign / Negative, III — Atypical, IV — Suspicious for Malignancy, V — Malignant"},
+      {type:"fill-line", text:"Cell type / Specify:"},
+    ]
+  },
+];
+
+/* ─────────────────────────────────────────
+   STATE
+───────────────────────────────────────── */
+let currentTemplateId = templates[0].id;
+let appState = {};
+let userStates = {};
+
+function init() {
+  try { userStates = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; } catch { userStates = {}; }
+  loadCustomTemplates();
+  renderSidebar();
+  loadTemplate(templates[0].id);
+  attachListeners();
+  attachThemePicker();
+  initZoomWheel();
+  applyZoom();
+}
+
+function saveState() {
+  userStates[currentTemplateId] = appState;
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(userStates)); } catch {}
+  renderSVG();
+}
+
+function resetTemplate() {
+  const isCustom = customTemplates.some(x => x.id === currentTemplateId);
+  const msg = isCustom
+    ? "Reset this custom stamp back to a blank layout?"
+    : "Reset this stamp to its defaults?";
+  if (!confirm(msg)) return;
+  delete userStates[currentTemplateId];
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(userStates)); } catch {}
+  loadTemplate(currentTemplateId);
+}
+
+/* ─────────────────────────────────────────
+   SIDEBAR
+───────────────────────────────────────── */
+function renderSidebar() {
+  const container = document.getElementById('template-list');
+  container.innerHTML = '';
+  const groups = {};
+  allTemplates().forEach(t => { (groups[t.group] = groups[t.group]||[]).push(t); });
+  Object.entries(groups).forEach(([g, list]) => {
+    const lbl = document.createElement('div');
+    lbl.className = 'tpl-group-label';
+    lbl.textContent = g;
+    container.appendChild(lbl);
+    list.forEach(t => {
+      const isCustom = !!t._custom;
+      const isActive = t.id === currentTemplateId;
+      const row = document.createElement('div');
+      row.className = 'tpl-btn-row';
+
+      const btn = document.createElement('button');
+      btn.className = 'template-btn' + (isActive ? ' active' : '');
+      const editedTag = (!isCustom && userStates[t.id]) ? '<span class="tpl-tag">edited</span>' : '';
+      const customTag = isCustom ? '<span class="tpl-tag-custom">custom</span>' : '';
+      btn.innerHTML = t.name + editedTag + customTag;
+      btn.onclick = () => { loadTemplate(t.id); closeSidebar(); };
+      row.appendChild(btn);
+
+      if (isCustom) {
+        const renameBtn = document.createElement('button');
+        renameBtn.className = 'tpl-action';
+        renameBtn.title = 'Rename';
+        renameBtn.textContent = '✎';
+        renameBtn.onclick = (e) => { e.stopPropagation(); openRenameModal(t.id); };
+        row.appendChild(renameBtn);
+
+        const delBtn = document.createElement('button');
+        delBtn.className = 'tpl-action del';
+        delBtn.title = 'Delete stamp';
+        delBtn.textContent = '✕';
+        delBtn.onclick = (e) => { e.stopPropagation(); deleteCustomStamp(t.id); };
+        row.appendChild(delBtn);
+      }
+
+      container.appendChild(row);
+    });
+  });
+}
+
+function loadTemplate(id) {
+  currentTemplateId = id;
+  const t = allTemplates().find(x => x.id === id);
+  if (!t) return;
+  appState = userStates[id]
+    ? JSON.parse(JSON.stringify(userStates[id]))
+    : { w: t.w, h: t.h, fs: t.fs, sp: t.sp, style: t.style, fields: JSON.parse(JSON.stringify(t.fields)) };
+  updateUI();
+  renderSidebar();
+}
+
+/* ─────────────────────────────────────────
+   CONTROLS
+───────────────────────────────────────── */
+function updateUI() {
+  document.getElementById('ctrl-w').value  = appState.w;
+  document.getElementById('ctrl-h').value  = appState.h;
+  document.getElementById('ctrl-fs').value = appState.fs;
+  document.getElementById('ctrl-sp').value = appState.sp;
+  document.getElementById('ctrl-style').value = appState.style;
+  renderEditor();
+  saveState();
+}
+
+function attachListeners() {
+  ['ctrl-w','ctrl-h','ctrl-fs','ctrl-sp'].forEach(id => {
+    document.getElementById(id).addEventListener('input', e => {
+      appState[id.replace('ctrl-','')] = parseFloat(e.target.value) || 0;
+      saveState();
+    });
+  });
+  document.getElementById('ctrl-style').addEventListener('change', e => {
+    appState.style = e.target.value; saveState();
+  });
+}
+
+/* ─────────────────────────────────────────
+   THEME PICKER
+───────────────────────────────────────── */
+function attachThemePicker() {
+  document.querySelectorAll('.theme-dot').forEach(dot => {
+    dot.addEventListener('click', () => {
+      document.body.dataset.theme = dot.dataset.theme;
+      document.querySelectorAll('.theme-dot').forEach(d => d.classList.remove('active'));
+      dot.classList.add('active');
+    });
+  });
+}
+
+/* ─────────────────────────────────────────
+   MOBILE HELPERS
+───────────────────────────────────────── */
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('sidebar-overlay').classList.toggle('open');
+}
+function closeSidebar() {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('sidebar-overlay').classList.remove('open');
+}
+function togglePreview() {
+  document.body.classList.toggle('show-preview');
+}
+
+/* ─────────────────────────────────────────
+   EDITOR
+───────────────────────────────────────── */
+function renderEditor() {
+  const container = document.getElementById('fields-container');
+  container.innerHTML = '';
+  appState.fields.forEach((field, index) => {
+    const el = document.createElement('div');
+    el.className = 'field-row';
+    el.dataset.index = index;
+
+    const typeOpts = [
+      ['title','Title (Centred)'],
+      ['heading','Heading (Bold)'],
+      ['text','Standard Text'],
+      ['inline-boxes','Inline Checkboxes'],
+      ['tier-list','Tier / Checkbox List'],
+      ['fill-line','Fill Line (Dotted)'],
+      ['divider','Divider'],
+    ].map(([v,l]) => `<option value="${v}" ${field.type===v?'selected':''}>${l}</option>`).join('');
+
+    el.innerHTML = `
+      <div class="field-row-head">
+        <span class="drag-handle" title="Drag to reorder">⠿</span>
+        <select class="field-type-select" onchange="updateFieldType(${index},this.value)">${typeOpts}</select>
+        <div class="field-actions">
+          <button class="btn-icon" onclick="moveField(${index},-1)" title="Move up">↑</button>
+          <button class="btn-icon" onclick="moveField(${index},1)"  title="Move down">↓</button>
+          <button class="btn-icon del" onclick="deleteField(${index})" title="Delete">✕</button>
+        </div>
+      </div>
+      <div class="field-body">${buildFieldBody(field, index)}</div>`;
+
+    container.appendChild(el);
+  });
+  setupDragDrop();
+}
+
+function buildFieldBody(field, index) {
+  if (['title','heading','text','fill-line'].includes(field.type)) {
+    return `<input type="text" placeholder="Text content" value="${esc(field.text||'')}" oninput="updateField(${index},'text',this.value)">`;
+  }
+  if (field.type === 'inline-boxes') {
+    return `
+      <div class="input-row">
+        <input type="text" placeholder="Label" value="${esc(field.label||'')}" oninput="updateField(${index},'label',this.value)">
+        <input type="text" placeholder="Options, comma-separated" value="${esc(field.options||'')}" oninput="updateField(${index},'options',this.value)">
+      </div>
+      <div class="hint">e.g.: Yes, No, Pending</div>`;
+  }
+  if (field.type === 'tier-list') {
+    return `
+      <input type="text" placeholder="Items, comma-separated" value="${esc(field.options||'')}" oninput="updateField(${index},'options',this.value)">
+      <div class="hint">Each item gets a checkbox. Prefix with Roman/Arabic numeral for tiered lists.</div>`;
+  }
+  if (field.type === 'divider') {
+    return `<div class="hint">── dashed rule ──</div>`;
+  }
+  return '';
+}
+
+window.addField       = () => { appState.fields.push({type:'text',text:'New Field'}); updateUI(); };
+window.deleteField    = i  => { appState.fields.splice(i,1); updateUI(); };
+window.moveField      = (i,d) => {
+  if (i+d < 0 || i+d >= appState.fields.length) return;
+  [appState.fields[i], appState.fields[i+d]] = [appState.fields[i+d], appState.fields[i]];
+  updateUI();
+};
+window.updateFieldType = (i, v) => {
+  appState.fields[i].type = v;
+  if (!appState.fields[i].text) appState.fields[i].text = '';
+  if (!appState.fields[i].options && (v==='inline-boxes'||v==='tier-list')) appState.fields[i].options = 'Option 1, Option 2';
+  updateUI();
+};
+window.updateField = (i, key, val) => { appState.fields[i][key] = val; saveState(); };
+
+/* ─────────────────────────────────────────
+   DRAG-AND-DROP REORDER
+───────────────────────────────────────── */
+let dragSrc = null;
+function setupDragDrop() {
+  document.querySelectorAll('.field-row').forEach(row => {
+    const handle = row.querySelector('.drag-handle');
+    if (handle) {
+      handle.setAttribute('draggable', 'true');
+      handle.addEventListener('dragstart', e => {
+        dragSrc = +row.dataset.index;
+        e.dataTransfer.effectAllowed = 'move';
+        row.style.opacity = '.45';
+        e.stopPropagation();
+      });
+      handle.addEventListener('dragend', () => { row.style.opacity = ''; });
+    }
+    // Prevent inputs/selects/buttons inside the row from triggering any drag
+    row.querySelectorAll('input, select, button, textarea').forEach(el => {
+      el.addEventListener('mousedown', e => e.stopPropagation());
+    });
+    row.addEventListener('dragover', e => { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; });
+    row.addEventListener('drop', e => {
+      e.preventDefault();
+      const dst = +row.dataset.index;
+      if (dragSrc === null || dragSrc === dst) return;
+      const f = appState.fields.splice(dragSrc, 1)[0];
+      appState.fields.splice(dst, 0, f);
+      dragSrc = null;
+      updateUI();
+    });
+  });
+}
+
+/* ─────────────────────────────────────────
+   SVG RENDERER
+───────────────────────────────────────── */
+function renderSVG() {
+  const { w, h, fs, sp, style, fields } = appState;
+  const MM = 3.7795;
+  const pxW = w * MM;
+  const pxH = h * MM;
+  const pad = 4.5 * MM;
+  const boxSz = fs * 0.88;
+  const lh = fs + sp;
+
+  const rx = style === 'rounded' ? 7 : style === 'double' ? 3 : 0;
+  // Use pixel dimensions (not mm) so the SVG is immune to browser page zoom.
+  // The preview zoom wrapper applies its own independent CSS scale.
+  let svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${pxW.toFixed(1)}" height="${pxH.toFixed(1)}" viewBox="0 0 ${pxW.toFixed(1)} ${pxH.toFixed(1)}" data-w-mm="${w}" data-h-mm="${h}">`;
+  svg += `<rect width="100%" height="100%" fill="white"/>`;
+  svg += `<rect x="2" y="2" width="${(pxW-4).toFixed(1)}" height="${(pxH-4).toFixed(1)}" rx="${rx}" fill="none" stroke="black" stroke-width="${style==='double'?1.6:1.1}"/>`;
+  if (style === 'double') {
+    svg += `<rect x="5.5" y="5.5" width="${(pxW-11).toFixed(1)}" height="${(pxH-11).toFixed(1)}" rx="${Math.max(0,rx-2)}" fill="none" stroke="black" stroke-width="0.55"/>`;
+  }
+
+  let y = pad + fs;
+
+  fields.forEach(f => {
+    let cx = pad;
+    if (f.type === 'title') {
+      svg += `<text x="${(pxW/2).toFixed(1)}" y="${y.toFixed(1)}" font-family="Arial,sans-serif" font-size="${fs+1}px" font-weight="bold" fill="#000" text-anchor="middle">${escXML(f.text)}</text>`;
+      y += lh + 2;
+    }
+    else if (f.type === 'heading') {
+      svg += `<text x="${pad.toFixed(1)}" y="${y.toFixed(1)}" font-family="Arial,sans-serif" font-size="${fs}px" font-weight="bold" fill="#000" text-decoration="underline">${escXML(f.text)}</text>`;
+      y += lh;
+    }
+    else if (f.type === 'text') {
+      const lines = wrapSVG(f.text||'', pxW - pad*2, fs);
+      lines.forEach(line => {
+        svg += `<text x="${pad.toFixed(1)}" y="${y.toFixed(1)}" font-family="Arial,sans-serif" font-size="${(fs-0.5)}px" fill="#333">${escXML(line)}</text>`;
+        y += lh - 1;
+      });
+    }
+    else if (f.type === 'divider') {
+      const dy = y - fs * 0.3;
+      svg += `<line x1="${(pad+2).toFixed(1)}" y1="${dy.toFixed(1)}" x2="${(pxW-pad-2).toFixed(1)}" y2="${dy.toFixed(1)}" stroke="#555" stroke-width="0.6" stroke-dasharray="2.5,2"/>`;
+      y += sp + 2;
+    }
+    else if (f.type === 'fill-line') {
+      svg += `<text x="${cx.toFixed(1)}" y="${y.toFixed(1)}" font-family="Arial,sans-serif" font-size="${fs}px" fill="#000">${escXML(f.text||'')}</text>`;
+      const tw = (f.text||'').length * (fs * 0.52);
+      svg += `<line x1="${(cx+tw+4).toFixed(1)}" y1="${y.toFixed(1)}" x2="${(pxW-pad).toFixed(1)}" y2="${y.toFixed(1)}" stroke="#000" stroke-width="0.7" stroke-dasharray="2,2"/>`;
+      y += lh;
+    }
+    else if (f.type === 'tier-list') {
+      const items = (f.options||'').split(',').map(s=>s.trim()).filter(Boolean);
+      items.forEach(item => {
+        svg += `<rect x="${cx.toFixed(1)}" y="${(y-boxSz+1.5).toFixed(1)}" width="${boxSz.toFixed(1)}" height="${boxSz.toFixed(1)}" fill="none" stroke="#000" stroke-width="0.9" rx="1"/>`;
+        svg += `<text x="${(cx+boxSz+5).toFixed(1)}" y="${y.toFixed(1)}" font-family="Arial,sans-serif" font-size="${fs}px" fill="#000">${escXML(item)}</text>`;
+        y += lh;
+      });
+    }
+    else if (f.type === 'inline-boxes') {
+      const opts = (f.options||'').split(',').map(s=>s.trim()).filter(Boolean);
+      if (f.label) {
+        svg += `<text x="${cx.toFixed(1)}" y="${y.toFixed(1)}" font-family="Arial,sans-serif" font-size="${fs}px" font-weight="bold" fill="#000">${escXML(f.label)}</text>`;
+        cx += (f.label.length * (fs * 0.52)) + 6;
+      }
+      let maxW = 0;
+      opts.forEach(o => { const w2 = boxSz+5+(o.length*(fs*0.52)); if(w2>maxW) maxW=w2; });
+      const col = maxW + 6;
+      opts.forEach(opt => {
+        if (cx + col > pxW - pad && cx > pad + 10) { y += lh; cx = pad + (f.label ? 12 : 0); }
+        svg += `<rect x="${cx.toFixed(1)}" y="${(y-boxSz+1.5).toFixed(1)}" width="${boxSz.toFixed(1)}" height="${boxSz.toFixed(1)}" fill="none" stroke="#000" stroke-width="0.9" rx="1"/>`;
+        svg += `<text x="${(cx+boxSz+4).toFixed(1)}" y="${y.toFixed(1)}" font-family="Arial,sans-serif" font-size="${fs}px" fill="#000">${escXML(opt)}</text>`;
+        cx += col;
+      });
+      y += lh;
+    }
+  });
+
+  svg += '</svg>';
+  document.getElementById('svg-container').innerHTML = svg;
+}
+
+function wrapSVG(text, maxW, fs) {
+  const cpl = Math.floor(maxW / (fs * 0.54));
+  const words = text.split(' ');
+  const lines = [];
+  let cur = '';
+  words.forEach(w => {
+    if ((cur+' '+w).trim().length > cpl) { if(cur) lines.push(cur.trim()); cur = w; }
+    else cur = (cur+' '+w).trim();
+  });
+  if (cur) lines.push(cur.trim());
+  return lines.length ? lines : [''];
+}
+
+function escXML(s) {
+  return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function esc(s) { return (s||'').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
+
+/* ─────────────────────────────────────────
+   DOWNLOAD
+───────────────────────────────────────── */
+window.downloadSVG = () => {
+  const node = document.getElementById('svg-container').querySelector('svg');
+  if (!node) return;
+  // Restore mm dimensions for the exported file (preview uses px to avoid browser-zoom scaling)
+  const clone = node.cloneNode(true);
+  const wMM = node.getAttribute('data-w-mm');
+  const hMM = node.getAttribute('data-h-mm');
+  if (wMM) { clone.setAttribute('width', wMM + 'mm'); clone.setAttribute('height', hMM + 'mm'); }
+  clone.removeAttribute('data-w-mm'); clone.removeAttribute('data-h-mm');
+  const blob = new Blob([new XMLSerializer().serializeToString(clone)], {type:'image/svg+xml;charset=utf-8'});
+  const url  = URL.createObjectURL(blob);
+  const a    = Object.assign(document.createElement('a'), {href:url, download: currentTemplateId+'_stamp.svg'});
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+};
+
+/* ─────────────────────────────────────────
+   PREVIEW ZOOM (independent from browser page zoom)
+───────────────────────────────────────── */
+let previewZoom = 1.0;
+const ZOOM_MIN = 0.25;
+const ZOOM_MAX = 4.0;
+const ZOOM_STEP = 0.25;
+
+function applyZoom() {
+  const wrapper = document.getElementById('preview-zoom-wrapper');
+  if (wrapper) wrapper.style.transform = `scale(${previewZoom})`;
+  const ind = document.getElementById('zoom-indicator');
+  if (ind) ind.textContent = previewZoom.toFixed(2).replace(/\.?0+$/, '') + '×';
+}
+
+function adjustZoom(delta) {
+  previewZoom = Math.min(ZOOM_MAX, Math.max(ZOOM_MIN, previewZoom + delta));
+  // Round to nearest ZOOM_STEP to avoid float drift
+  previewZoom = Math.round(previewZoom / ZOOM_STEP) * ZOOM_STEP;
+  applyZoom();
+}
+
+function resetZoom() {
+  previewZoom = 1.0;
+  applyZoom();
+}
+
+function initZoomWheel() {
+  const scrollArea = document.getElementById('preview-scroll');
+  if (!scrollArea) return;
+  scrollArea.addEventListener('wheel', e => {
+    if (e.ctrlKey || e.metaKey) {
+      e.preventDefault();
+      e.stopPropagation();
+      const delta = e.deltaY < 0 ? ZOOM_STEP : -ZOOM_STEP;
+      adjustZoom(delta);
+    }
+  }, { passive: false });
+}
+
+/* ─────────────────────────────────────────
+   CUSTOM STAMPS (user-created, stored in localStorage)
+───────────────────────────────────────── */
+const CUSTOM_KEY = 'stamp_arch_custom_v1';
+let customTemplates = [];
+
+function loadCustomTemplates() {
+  try { customTemplates = JSON.parse(localStorage.getItem(CUSTOM_KEY)) || []; } catch { customTemplates = []; }
+}
+function saveCustomTemplates() {
+  try { localStorage.setItem(CUSTOM_KEY, JSON.stringify(customTemplates)); } catch {}
+}
+function allTemplates() { return [...templates, ...customTemplates]; }
+
+/* ─── MODAL LOGIC ─── */
+let modalMode = 'create'; // 'create' | 'rename'
+let renameTargetId = null;
+
+function openNewStampModal() {
+  modalMode = 'create';
+  renameTargetId = null;
+  document.getElementById('modal-title').textContent = 'New stamp';
+  document.getElementById('modal-confirm-btn').textContent = 'Create';
+  document.getElementById('modal-name').value = '';
+  document.getElementById('modal-hint').textContent = 'A blank stamp will be created. You can add rows from the Layout Builder.';
+  document.getElementById('modal-newgroup-field').style.display = 'none';
+  document.getElementById('modal-newgroup').value = '';
+
+  // Populate group dropdown with all existing groups
+  const sel = document.getElementById('modal-group-select');
+  const groups = [...new Set(allTemplates().map(t => t.group))];
+  sel.innerHTML = groups.map(g => `<option value="${g}">${g}</option>`).join('')
+    + '<option value="__new__">＋ Create new group…</option>';
+  sel.value = groups[0] || '__new__';
+  modalGroupChange();
+
+  document.getElementById('modal-backdrop').classList.add('open');
+  setTimeout(() => document.getElementById('modal-name').focus(), 60);
+}
+
+function openRenameModal(id) {
+  const t = customTemplates.find(x => x.id === id);
+  if (!t) return;
+  modalMode = 'rename';
+  renameTargetId = id;
+  document.getElementById('modal-title').textContent = 'Rename stamp';
+  document.getElementById('modal-confirm-btn').textContent = 'Rename';
+  document.getElementById('modal-name').value = t.name;
+  document.getElementById('modal-hint').textContent = 'Update the stamp name. Group cannot be changed after creation.';
+
+  const sel = document.getElementById('modal-group-select');
+  sel.innerHTML = `<option value="${t.group}">${t.group}</option>`;
+  sel.value = t.group;
+  document.getElementById('modal-newgroup-field').style.display = 'none';
+
+  document.getElementById('modal-backdrop').classList.add('open');
+  setTimeout(() => document.getElementById('modal-name').focus(), 60);
+}
+
+function closeModal() {
+  document.getElementById('modal-backdrop').classList.remove('open');
+}
+
+function modalGroupChange() {
+  const val = document.getElementById('modal-group-select').value;
+  document.getElementById('modal-newgroup-field').style.display = val === '__new__' ? 'flex' : 'none';
+  if (val === '__new__') setTimeout(() => document.getElementById('modal-newgroup').focus(), 40);
+}
+
+function confirmModal() {
+  const name = document.getElementById('modal-name').value.trim();
+  if (!name) { document.getElementById('modal-name').focus(); return; }
+
+  if (modalMode === 'rename') {
+    const t = customTemplates.find(x => x.id === renameTargetId);
+    if (t) { t.name = name; saveCustomTemplates(); renderSidebar(); closeModal(); }
+    return;
+  }
+
+  // CREATE mode
+  const selVal = document.getElementById('modal-group-select').value;
+  let group = selVal === '__new__'
+    ? document.getElementById('modal-newgroup').value.trim()
+    : selVal;
+  if (!group) { document.getElementById('modal-newgroup').focus(); return; }
+
+  const id = 'custom_' + Date.now();
+  const newTpl = {
+    id, name, group,
+    w: 80, h: 50, fs: 10, sp: 5, style: 'single',
+    fields: [
+      { type: 'title', text: name },
+      { type: 'divider' },
+      { type: 'tier-list', options: 'Category 1, Category 2, Category 3' },
+    ],
+    _custom: true
+  };
+  customTemplates.push(newTpl);
+  saveCustomTemplates();
+  renderSidebar();
+  loadTemplate(id);
+  closeModal();
+  closeSidebar();
+}
+
+function deleteCustomStamp(id) {
+  const t = customTemplates.find(x => x.id === id);
+  if (!t) return;
+  if (!confirm(`Delete "${t.name}"? This cannot be undone.`)) return;
+  customTemplates = customTemplates.filter(x => x.id !== id);
+  saveCustomTemplates();
+  delete userStates[id];
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(userStates)); } catch {}
+  // Switch to first template if we deleted the active one
+  if (currentTemplateId === id) loadTemplate(templates[0].id);
+  else renderSidebar();
+}
+
+// Close modal on backdrop click
+document.getElementById('modal-backdrop').addEventListener('click', e => {
+  if (e.target === e.currentTarget) closeModal();
+});
+// Close modal on Escape
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+init();
+</script>
+</body>
+</html>
