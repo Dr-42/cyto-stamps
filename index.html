@@ -1044,295 +1044,370 @@
       ───────────────────────────────────────── */
       const templates = [
         /* ── GYNAE / CERVICAL ── */
+
         {
           id: "beth_lbc",
           name: "Bethesda — Cervical",
-          group: "Gynaecological",
-          w: 92,
-          h: 82,
-          fs: 9,
-          sp: 5,
-          style: "double",
-          fields: [
-            { type: "title", text: "The Bethesda System — Cervical Cytology" },
-            {
-              type: "inline-boxes",
-              label: "Specimen:",
-              options: "Conventional Smear, LBC",
-            },
-            { type: "divider" },
-            { type: "heading", text: "Specimen Adequacy" },
-            {
-              type: "inline-boxes",
-              label: "",
-              options: "Satisfactory, Unsatisfactory",
-            },
-            {
-              type: "inline-boxes",
-              label: "If Unsat: ",
-              options: "LSC, Obs by: - , Blood, Inflammation, Mucin",
-            },
-            {
-              type: "inline-boxes",
-              label: "EC: ",
-              options: "Present, Absent",
-            },
-            {
-              type: "inline-boxes",
-              label: "Endometrial cells:",
-              options: "Seen, Not seen",
-            },
-            { type: "divider" },
-            { type: "heading", text: "General Categorisation" },
-            {
-              type: "tier-list",
-              options:
-                "Negative for Intraepithelial Lesion or Malignancy (NILM)",
-            },
-            {
-              type: "inline-boxes",
-              label: "Squamous:",
-              options: "ASC-US, ASC-H, LSIL, HSIL, SCC",
-            },
-            {
-              type: "inline-boxes",
-              label: "Glandular:",
-              options: "AGC-NOS, AGC-FN, AIS, Adenocarcinoma",
-            },
-            { type: "divider" },
-            { type: "heading", text: "Organisms / Flora" },
-            {
-              type: "inline-boxes",
-              label: "",
-              options: "Normal flora, Shift in flora _______________",
-            },
-            {
-              type: "inline-boxes",
-              label: "Reactive / Reparative changes:",
-              options: "Present, Absent",
-            },
-          ],
+          stamp: {
+            w: 101,
+            h: 62,
+            fs: 12,
+            sp: 5,
+            style: "double",
+            fields: [
+              {
+                type: "title",
+                text: "The Bethesda System for Reporting Cervical Cytology",
+              },
+              {
+                type: "inline-boxes",
+                label: "Specimen: ",
+                options: "Conventional Smear, LBC",
+              },
+              {
+                type: "heading",
+                text: "Specimen Adequacy",
+              },
+              {
+                type: "inline-boxes",
+                label: "",
+                options:
+                  "Satisfactory, Unsatisfactory ....................................................",
+              },
+              {
+                type: "inline-boxes",
+                label: "EC: ",
+                options: "Present, Absent",
+              },
+              {
+                type: "heading",
+                text: "General Categorisation",
+              },
+              {
+                type: "tier-list",
+                options:
+                  "Negative for Intraepithelial Lesion or Malignancy (NILM)",
+              },
+              {
+                type: "inline-boxes",
+                label: "Squamous:",
+                options: "ASC-US, ASC-H, LSIL, HSIL, SCC",
+              },
+              {
+                type: "inline-boxes",
+                label: "Glandular:",
+                options: "AGC-NOS, AGC-FN, AIS, Adenocarcinoma",
+              },
+              {
+                type: "heading",
+                text: "Organisms / Flora",
+              },
+              {
+                type: "inline-boxes",
+                label: "",
+                options:
+                  "Normal flora, Shift in flora .......................................................",
+              },
+              {
+                type: "inline-boxes",
+                label: "Reactive / Reparative changes:",
+                options: "Present, Absent",
+              },
+            ],
+          },
         },
 
         /* ── URINARY ── */
+
         {
           id: "paris_urinary",
           name: "Paris — Urinary",
-          group: "Urinary",
-          w: 88,
-          h: 68,
-          fs: 10,
-          sp: 5,
-          style: "rounded",
-          fields: [
-            {
-              type: "title",
-              text: "The Paris System — Urinary Cytology (TPS 2.0)",
-            },
-            {
-              type: "inline-boxes",
-              label: "Specimen:",
-              options:
-                "Voided urine, Catheterised, Instrumented, Washing / Brushing",
-            },
-            { type: "divider" },
-            {
-              type: "tier-list",
-              options:
-                "1 — Nondiagnostic (ND), 2 — Negative for HGUC (NHGUC), 3 — Atypical Urothelial Cells (AUC), 4 — Suspicious for HGUC (SHGUC), 5 — High-Grade Urothelial Carcinoma (HGUC), 6 — Other _________________",
-            },
-            { type: "spacer", text: "2" },
-            { type: "fill-line", text: "Specify:" },
-          ],
+          stamp: {
+            w: 111,
+            h: 53,
+            fs: 12,
+            sp: 5,
+            style: "rounded",
+            fields: [
+              {
+                type: "title",
+                text: "The Paris System for Reporting Urinary Cytopathology (TPS 2.0)",
+              },
+              {
+                type: "inline-boxes",
+                label: "",
+                options:
+                  "Voided urine, Catheterised, Instrumented, Bladder Washing / Brushing",
+              },
+              {
+                type: "divider",
+              },
+              {
+                type: "spacer",
+                text: "2",
+              },
+              {
+                type: "tier-list",
+                options:
+                  "1 — Nondiagnostic (ND), 2 — Negative for HGUC (NHGUC), 3 — Atypical Urothelial Cells (AUC), 4 — Suspicious for HGUC (SHGUC), 5 — High-Grade Urothelial Carcinoma (HGUC), 6 — Other ...............................................................................................",
+              },
+            ],
+          },
         },
 
         /* ── THYROID ── */
         {
           id: "beth_thyroid",
           name: "Bethesda — Thyroid",
-          group: "Thyroid / Salivary",
-          w: 88,
-          h: 62,
-          fs: 10,
-          sp: 5,
-          style: "rounded",
-          fields: [
-            {
-              type: "title",
-              text: "Bethesda System for Reporting Thyroid FNA (BSRTC)",
-            },
-            {
-              type: "inline-boxes",
-              label: "Adequacy:",
-              options:
-                "Satisfactory, Unsatisfactory (cystic fluid only), Unsatisfactory (other)",
-            },
-            { type: "divider" },
-            {
-              type: "tier-list",
-              options:
-                "I — Non-Diagnostic / Unsatisfactory, II — Benign, III — Atypia of Undetermined Significance (AUS / FLUS), IV — Follicular Neoplasm / Suspicious for FN (SFN), V — Suspicious for Malignancy (SUSP), VI — Malignant",
-            },
-            { type: "fill-line", text: "Specify:" },
-          ],
+          stamp: {
+            w: 94,
+            h: 43,
+            fs: 12,
+            sp: 5,
+            style: "rounded",
+            fields: [
+              {
+                type: "title",
+                text: "Bethesda System for Reporting Thyroid Cytopathology",
+              },
+              {
+                type: "divider",
+              },
+              {
+                type: "spacer",
+                text: "3",
+              },
+              {
+                type: "tier-list",
+                options:
+                  "I — Non-Diagnostic, II — Benign, III — Atypia of Undetermined Significance (AUS), IV — Follicular Neoplasm, V — Suspicious for Malignancy, VI — Malignant",
+              },
+            ],
+          },
         },
 
         /* ── SALIVARY ── */
+
         {
           id: "milan_salivary",
           name: "Milan — Salivary Gland",
-          group: "Thyroid / Salivary",
-          w: 92,
-          h: 64,
-          fs: 10,
-          sp: 5,
-          style: "rounded",
-          fields: [
-            {
-              type: "title",
-              text: "The Milan System for Reporting Salivary Gland Cytology",
-            },
-            {
-              type: "inline-boxes",
-              label: "Gland:",
-              options:
-                "Parotid, Submandibular, Sublingual, Minor salivary gland",
-            },
-            { type: "divider" },
-            {
-              type: "tier-list",
-              options:
-                "I — Non-Diagnostic, II — Non-Neoplastic, III — Atypia of Undetermined Significance (AUS), IVA — Benign Neoplasm, IVB — Salivary Gland Neoplasm of Uncertain Malignant Potential (SUMP), V — Suspicious for Malignancy, VI — Malignant",
-            },
-            { type: "fill-line", text: "Specify:" },
-          ],
+          stamp: {
+            w: 116,
+            h: 55,
+            fs: 12,
+            sp: 5,
+            style: "rounded",
+            fields: [
+              {
+                type: "title",
+                text: "The Milan System for Reporting Salivary Gland Cytology",
+              },
+              {
+                type: "divider",
+                text: "1",
+              },
+              {
+                type: "spacer",
+                text: "1",
+              },
+              {
+                type: "inline-boxes",
+                label: "      ",
+                options:
+                  "Parotid, Submandibular, Sublingual, Minor salivary gland",
+              },
+              {
+                type: "tier-list",
+                options:
+                  "I — Non-Diagnostic, II — Non-Neoplastic, III — Atypia of Undetermined Significance (AUS), IV — Neoplasm, IVA — Benign, IVB — Salivary Gland Neoplasm of Uncertain Malignant Potential (SUMP), V — Suspicious for Malignancy, VI — Malignant",
+              },
+            ],
+          },
         },
 
         /* ── BREAST ── */
+
         {
           id: "yokohama_breast",
           name: "Yokohama — Breast",
-          group: "Breast / Soft Tissue",
-          w: 85,
-          h: 56,
-          fs: 10,
-          sp: 5,
-          style: "rounded",
-          fields: [
-            { type: "title", text: "Yokohama System — Breast FNA Cytology" },
-            {
-              type: "inline-boxes",
-              label: "Specimen type:",
-              options: "FNA, Nipple discharge, Imprint",
-            },
-            { type: "divider" },
-            {
-              type: "tier-list",
-              options:
-                "1 — Insufficient / Unsatisfactory, 2 — Benign, 3 — Atypical / Probably Benign, 4 — Suspicious of Malignancy, 5 — Malignant",
-            },
-          ],
+          stamp: {
+            w: 70,
+            h: 45,
+            fs: 12,
+            sp: 5,
+            style: "rounded",
+            fields: [
+              {
+                type: "title",
+                text: "IAC Yokohama System for Reporting",
+              },
+              {
+                type: "title",
+                text: "Breast FNAB Cytopathology",
+              },
+              {
+                type: "divider",
+              },
+              {
+                type: "spacer",
+                text: "2",
+              },
+              {
+                type: "tier-list",
+                options:
+                  "1 — Insufficient, 2 — Benign, 3 — Atypical, 4 — Suspicious, 5 — Malignant",
+              },
+            ],
+          },
         },
 
         /* ── SEROUS ── */
+
         {
           id: "tis_serous",
           name: "International — Serous Fluid",
-          group: "Body Fluids",
-          w: 90,
-          h: 62,
-          fs: 10,
-          sp: 5,
-          style: "rounded",
-          fields: [
-            {
-              type: "title",
-              text: "International System — Serous Fluid Cytopathology (ISSFCP)",
-            },
-            {
-              type: "inline-boxes",
-              label: "Fluid type:",
-              options: "Pleural, Ascitic, Other: _______________",
-            },
-            {
-              type: "inline-boxes",
-              label: "Volume (approx):",
-              options: "<50 mL, 50–500 mL, >500 mL ______________",
-            },
-            {
-              type: "fill-line",
-              text: "Gross appearance:",
-            },
-            { type: "divider" },
-            {
-              type: "tier-list",
-              options:
-                "I — Nondiagnostic, II — Negative for Malignancy (NFM), III — Atypia of Undetermined Significance (AUS), IV — Suspicious for Malignancy (SFM), V — Malignant",
-            },
-          ],
+          stamp: {
+            w: 100,
+            h: 65,
+            fs: 12,
+            sp: 5,
+            style: "rounded",
+            fields: [
+              {
+                type: "title",
+                text: "International System for Reportinng",
+              },
+              {
+                type: "title",
+                text: "Serours Fluid Cytopathology",
+              },
+              {
+                type: "divider",
+                text: "New Field",
+              },
+              {
+                type: "spacer",
+                text: "3",
+              },
+              {
+                type: "inline-boxes",
+                label: "Fluid type:",
+                options:
+                  "Pleural, Ascitic, Other: .......................................................",
+              },
+              {
+                type: "fill-line",
+                label: "Volume (approx):",
+                options: "<50 mL, 50–500 mL, >500 mL ______________",
+                text: "Volume: ",
+              },
+              {
+                type: "fill-line",
+                text: "Gross appearance:",
+              },
+              {
+                type: "tier-list",
+                options:
+                  "I — Nondiagnostic (ND), II — Negative for Malignancy (NFM), III — Atypia of Undetermined Significance (AUS), IV — Suspicious for Malignancy (SFM), V — Malignant (MAL)",
+              },
+            ],
+          },
         },
 
         /* ── LYMPH NODE ── */
+
         {
           id: "ln_hybrid",
           name: "Lymph Node FNA (Upgraded)",
-          group: "Lymph Node",
-          w: 88,
-          h: 76,
-          fs: 10,
-          sp: 5,
-          style: "double",
-          fields: [
-            { type: "title", text: "Lymph Node FNA — Cytopathology Report" },
-            { type: "divider" },
-            {
-              type: "tier-list",
-              options:
-                "LI — Non-Diagnostic / Unsatisfactory, L2 — Benign / Reactive, L3 — Atypical / Indeterminate, L4 — Suspicious for Malignancy, L5 — Malignant",
-            },
-            { type: "divider" },
-            { type: "heading", text: "If Category II — Reactive Pattern" },
-            {
-              type: "inline-boxes",
-              label: "",
-              options: "Reactive, Granulomatous, Suppurative, Other",
-            },
-            {
-              type: "inline-boxes",
-              label: "AFB:",
-              options: "Positive, Negative",
-            },
-            { type: "divider" },
-            { type: "heading", text: "If Category V — Malignancy Type" },
-            {
-              type: "inline-boxes",
-              label: "",
-              options: "Lymphoma, Metastatic Carcinoma, Other",
-            },
-          ],
+          stamp: {
+            w: 95,
+            h: 75,
+            fs: 12,
+            sp: 5,
+            style: "single",
+            fields: [
+              {
+                type: "title",
+                text: "Lymph Node FNA — Cytopathology Report",
+              },
+              {
+                type: "divider",
+              },
+              {
+                type: "tier-list",
+                options:
+                  "L1 — Non-Diagnostic / Unsatisfactory, L2 — Benign / Reactive, L3 — Atypical / Indeterminate, L4 — Suspicious for Malignancy, L5 — Malignant",
+              },
+              {
+                type: "divider",
+              },
+              {
+                type: "heading",
+                text: "If Category II - Features",
+              },
+              {
+                type: "inline-boxes",
+                text: "New Field",
+                options: "Follicular Hyperplasia, Granuloma, Necrosis",
+              },
+              {
+                type: "inline-boxes",
+                text: "New Field",
+                options:
+                  "Suggestive of TB, Consistent with TB, Tubercular Lymphadenitis",
+                label: "Tubercular Status ",
+              },
+              {
+                type: "inline-boxes",
+                text: "New Field",
+                options: "Positive, Negative",
+                label: "Stain for AFB ",
+              },
+              {
+                type: "divider",
+                text: "New Field",
+              },
+              {
+                type: "heading",
+                text: "If Category L5 — Malignancy Type",
+              },
+              {
+                type: "inline-boxes",
+                label: "",
+                options: "Lymphoma, Metastatic Carcinoma, Other",
+              },
+            ],
+          },
         },
 
         /* ── CSF ── */
         {
           id: "csf_icicle",
           name: "CSF — COG CNS Staging (ALL)",
-          group: "Haematology / CSF",
-          w: 82,
-          h: 64,
-          fs: 10,
-          sp: 5,
-          style: "rounded",
-          fields: [
-            {
-              type: "title",
-              text: "CSF Cytology — CNS Disease Status (ICiCLe / COG)",
-            },
-            {
-              type: "tier-list",
-              options:
-                "CNS1 — No blasts (regardless of WBC count), CNS2 — Blasts present AND WBC <5/µL (atraumatic tap), CNS3 — Blasts present AND WBC ≥5/µL, TLP+ — Traumatic tap (RBC ≥10/µL) WITH blasts, TLP− — Traumatic tap WITHOUT blasts",
-            },
-          ],
+          stamp: {
+            w: 70,
+            h: 30,
+            fs: 12,
+            sp: 5,
+            style: "rounded",
+            fields: [
+              {
+                type: "title",
+                text: "COG CSF Classification System",
+              },
+              {
+                type: "inline-boxes",
+                text: "New Field",
+                options: "True, False",
+                label: "Traumatic:",
+              },
+              {
+                type: "tier-list",
+                options:
+                  "CNS1 — No blasts, CNS2 — Blasts present AND WBC <5/µL, CNS3 — Blasts present AND WBC ≥5/µL",
+              },
+            ],
+          },
         },
       ];
 
@@ -1383,33 +1458,6 @@
         renderSVG();
       }
 
-      function resetTemplate() {
-        const isCustom = customTemplates.some(
-          (x) => x.id === currentTemplateId,
-        );
-        const msg = isCustom
-          ? "Reset this custom stamp back to a blank layout?"
-          : "Reset this stamp to its defaults?";
-        if (!confirm(msg)) return;
-        delete userStates[currentTemplateId];
-        try {
-          localStorage.setItem(STORAGE_KEY, JSON.stringify(userStates));
-        } catch {}
-        // Load fresh from template definition, pass skipSave=true so reset sticks
-        const t = allTemplates().find((x) => x.id === currentTemplateId);
-        if (!t) return;
-        appState = {
-          w: t.w,
-          h: t.h,
-          fs: t.fs,
-          sp: t.sp,
-          style: t.style,
-          fields: JSON.parse(JSON.stringify(t.fields)),
-        };
-        updateUI(true);
-        renderSidebar();
-      }
-
       /* ─────────────────────────────────────────
          SIDEBAR
       ───────────────────────────────────────── */
@@ -1418,7 +1466,9 @@
         container.innerHTML = "";
         const groups = {};
         allTemplates().forEach((t) => {
-          (groups[t.group] = groups[t.group] || []).push(t);
+          // Standard templates are missing the 'group' prop, so we provide a default
+          const groupName = t.group || "Standard";
+          (groups[groupName] = groups[groupName] || []).push(t);
         });
         Object.entries(groups).forEach(([g, list]) => {
           const lbl = document.createElement("div");
@@ -1474,17 +1524,52 @@
         currentTemplateId = id;
         const t = allTemplates().find((x) => x.id === id);
         if (!t) return;
+
+        // Handle both built-in templates (nested in .stamp) and custom ones (flat)
+        const source = t.stamp || t;
+
         appState = userStates[id]
           ? JSON.parse(JSON.stringify(userStates[id]))
           : {
-              w: t.w,
-              h: t.h,
-              fs: t.fs,
-              sp: t.sp,
-              style: t.style,
-              fields: JSON.parse(JSON.stringify(t.fields)),
+              w: source.w,
+              h: source.h,
+              fs: source.fs,
+              sp: source.sp,
+              style: source.style,
+              fields: JSON.parse(JSON.stringify(source.fields || [])),
             };
         updateUI();
+        renderSidebar();
+      }
+
+      function resetTemplate() {
+        const isCustom = customTemplates.some(
+          (x) => x.id === currentTemplateId,
+        );
+        const msg = isCustom
+          ? "Reset this custom stamp back to a blank layout?"
+          : "Reset this stamp to its defaults?";
+        if (!confirm(msg)) return;
+        delete userStates[currentTemplateId];
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(userStates));
+        } catch {}
+        // Load fresh from template definition, pass skipSave=true so reset sticks
+        const t = allTemplates().find((x) => x.id === currentTemplateId);
+        if (!t) return;
+
+        // Handle both built-in templates (nested in .stamp) and custom ones (flat)
+        const source = t.stamp || t;
+
+        appState = {
+          w: source.w,
+          h: source.h,
+          fs: source.fs,
+          sp: source.sp,
+          style: source.style,
+          fields: JSON.parse(JSON.stringify(source.fields || [])),
+        };
+        updateUI(true);
         renderSidebar();
       }
 
